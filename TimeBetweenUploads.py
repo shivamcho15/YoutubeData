@@ -9,7 +9,6 @@ from config import API_KEY, CHANNEL_ID
 
 youtube = build("youtube", "v3", developerKey=API_KEY)
 
-# --- 1. Get uploads playlist ID ---
 channel_response = youtube.channels().list(
     part="contentDetails",
     id=CHANNEL_ID
@@ -17,7 +16,6 @@ channel_response = youtube.channels().list(
 
 uploads_playlist_id = channel_response["items"][0]["contentDetails"]["relatedPlaylists"]["uploads"]
 
-# --- 2. Paginate uploads ---
 video_meta = {}
 video_ids = []
 next_page_token = None
@@ -42,7 +40,6 @@ while True:
     if not next_page_token:
         break
 
-# --- 3. Fetch statistics ---
 dates = []
 data = []
 
@@ -80,24 +77,21 @@ for i in range(0, len(video_ids), 50):
             data.append(0)
         
 
-# --- 4. Sort by date ---
 combined = sorted(zip(dates, data), key=lambda x: x[0])
 dates, data = zip(*combined)
 
-# --- 5. Plot ---
 plt.figure(figsize=(14, 6))
 plt.bar(dates, data, width=2)
 plt.xlabel("Publish Date")
-plt.ylabel("Avg Time Between Uploads")
+plt.ylabel("Time Between Uploads")
 plt.title("Upload Frequency Over Time")
 
-# Scale y-axis so tallest bar nearly hits top
 max_data = max(data)
 plt.ylim(0, max_data * 1.05)
 import numpy as np
-y_lines = np.arange(0, max_data + 2, 2)  # 0, 2, 4, ...
-plt.yticks(y_lines)                       # Set ticks
-plt.grid(axis='y', linestyle='--', alpha=0.5)  # Draw horizontal grid lines
+y_lines = np.arange(0, max_data + 2, 2)
+plt.yticks(y_lines)                       
+plt.grid(axis='y', linestyle='--', alpha=0.5)
 
 plt.ticklabel_format(axis="y", style="plain", useOffset=False)
 
