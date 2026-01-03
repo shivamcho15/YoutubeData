@@ -2,7 +2,7 @@ from googleapiclient.discovery import build
 from datetime import datetime
 import matplotlib.pyplot as plt
 from config import API_KEY, CHANNEL_ID
-
+import requests
 
 # API_KEY = "INSERT_API_KEY"
 # CHANNEL_ID = "INSERT_CHANNEL_ID"
@@ -13,6 +13,17 @@ channel_response = youtube.channels().list(
     part="contentDetails",
     id=CHANNEL_ID
 ).execute()
+
+url = "https://www.googleapis.com/youtube/v3/channels"
+params = {
+    "part": "snippet",
+    "id": CHANNEL_ID,
+    "key": API_KEY
+}
+
+response = requests.get(url, params=params).json()
+
+channel_name = response["items"][0]["snippet"]["title"]
 
 uploads_playlist_id = channel_response["items"][0]["contentDetails"]["relatedPlaylists"]["uploads"]
 
@@ -84,7 +95,7 @@ plt.figure(figsize=(14, 6))
 plt.bar(dates, data, width=2)
 plt.xlabel("Publish Date")
 plt.ylabel("Time Between Uploads")
-plt.title("Upload Frequency Over Time")
+plt.title(f"Upload Frequency Over Time for {channel_name}")
 
 max_data = max(data)
 plt.ylim(0, max_data * 1.05)
