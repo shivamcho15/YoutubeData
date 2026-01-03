@@ -1,19 +1,27 @@
 from googleapiclient.discovery import build
 from datetime import datetime
 import matplotlib.pyplot as plt
+from matplotlib.offsetbox import OffsetImage, AnnotationBbox
+
 from config import API_KEY, CHANNEL_ID
 import requests
+from PIL import Image
+from io import BytesIO
+
 
 # API_KEY = "INSERT_API_KEY"
 # CHANNEL_ID = "INSERT_CHANNEL_ID"
 
 youtube = build("youtube", "v3", developerKey=API_KEY)
 
+#GET VIDEOS
 channel_response = youtube.channels().list(
     part="contentDetails",
     id=CHANNEL_ID
 ).execute()
 
+
+#GET CHANNEL NAME
 url = "https://www.googleapis.com/youtube/v3/channels"
 params = {
     "part": "snippet",
@@ -26,6 +34,15 @@ response = requests.get(url, params=params).json()
 channel_name = response["items"][0]["snippet"]["title"]
 
 uploads_playlist_id = channel_response["items"][0]["contentDetails"]["relatedPlaylists"]["uploads"]
+
+#GET PROFILE PIC
+profile_pic_url = response["items"][0]["snippet"]["thumbnails"]["high"]["url"]
+
+
+img_response = requests.get(profile_pic_url)
+profile_img = Image.open(BytesIO(img_response.content))
+
+
 
 video_meta = {}
 video_ids = []
@@ -105,6 +122,20 @@ plt.yticks(y_lines)
 plt.grid(axis='y', linestyle='--', alpha=0.5)
 
 plt.ticklabel_format(axis="y", style="plain", useOffset=False)
+
+#DISPLAY PROFILE PIC
+imagebox = OffsetImage(profile_img, zoom=0.02) 
+
+
+ab = AnnotationBbox(
+    imagebox,
+    (0.95, 0.95),          
+    xycoords='axes fraction',
+    frameon=False
+)
+
+plt.gca().add_artist(ab)
+
 
 plt.tight_layout()
 plt.show()
