@@ -124,12 +124,12 @@ plt.grid(axis='y', linestyle='--', alpha=0.5)
 plt.ticklabel_format(axis="y", style="plain", useOffset=False)
 
 #DISPLAY PROFILE PIC
-imagebox = OffsetImage(profile_img, zoom=0.02) 
+imagebox = OffsetImage(profile_img, zoom=0.03) 
 
 
 ab = AnnotationBbox(
     imagebox,
-    (0.95, 0.95),          
+    (0.2, 1.05),          
     xycoords='axes fraction',
     frameon=False
 )
