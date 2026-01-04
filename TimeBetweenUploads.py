@@ -117,7 +117,7 @@ plt.title(f"Upload Frequency Over Time for {channel_name}")
 max_data = max(data)
 plt.ylim(0, max_data * 1.05)
 import numpy as np
-y_lines = np.arange(0, max_data + 2, 2)
+y_lines = np.arange(0, max_data + 2, 10)
 plt.yticks(y_lines)                       
 plt.grid(axis='y', linestyle='--', alpha=0.5)
 
