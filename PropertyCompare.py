@@ -73,20 +73,41 @@ for i in range(0, len(video_ids), 50):
 
         likes = int(stats.get("likeCount", 0))
 
+        age_days = max(
+    1,
+    (
+        datetime.now(timezone.utc)
+        - datetime.fromisoformat(snippet["publishedAt"].replace("Z", "+00:00"))
+    ).days
+)
+
         video = {
-            "views": views,
-            "likes": likes,
-            "comments": int(stats.get("commentCount", 0)),
-            "duration_minutes": isodate.parse_duration(
-                content["duration"]
-            ).total_seconds() / 60,
-            "published_days_ago": (
-                datetime.now(timezone.utc)
-                - datetime.fromisoformat(snippet["publishedAt"].replace("Z", "+00:00"))
-            ).days,
-            "like_ratio": likes / views,
-            "title_length": len(snippet["title"]),
-        }
+        "views": views,
+        "likes": likes,
+        "comments": int(stats.get("commentCount", 0)),
+
+        "duration_minutes": isodate.parse_duration(
+            content["duration"]
+        ).total_seconds() / 60,
+
+        "duration_seconds": isodate.parse_duration(
+            content["duration"]
+        ).total_seconds(),
+
+        "published_days_ago": age_days,
+
+        "like_ratio": likes / views,
+
+        "engagement_rate": (likes + int(stats.get("commentCount", 0))) / views,
+
+        "views_per_day": views / age_days,
+
+        "likes_per_1k_views": likes / views * 1000,
+
+        "comments_per_1k_views": int(stats.get("commentCount", 0)) / views * 1000,
+
+        "title_length": len(snippet["title"]),
+        "title_word_count": len(snippet["title"].split())}
 
         videos.append(video)
 
