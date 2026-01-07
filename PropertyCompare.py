@@ -6,12 +6,19 @@ import requests
 from PIL import Image
 from io import BytesIO
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
+import os
+
 
 from config import API_KEY, CHANNEL_ID
+
 
 #CHOOSE PROPERTIES
 X_PROPERTY = "duration_minutes"
 Y_PROPERTY = "views"
+
+SAVE_IMAGE = True
+SHOW_IMAGE = True
+PATH = "graphs/"
 
 youtube = build("youtube", "v3", developerKey=API_KEY)
 
@@ -142,6 +149,29 @@ ab = AnnotationBbox(
 )
 
 plt.gca().add_artist(ab)
-
 plt.tight_layout()
-plt.show()
+
+
+if SAVE_IMAGE:
+    os.makedirs("graphs", exist_ok=True)
+
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    filename = (
+        f"{PATH}{channel_name.replace(' ', '_')}_"
+        f"{Y_PROPERTY}_vs_{X_PROPERTY}_"
+        f"{timestamp}.png"
+    )
+
+    plt.savefig(
+        filename,
+        dpi=300,
+        bbox_inches="tight",
+        facecolor="white"
+    )
+
+
+
+if(SHOW_IMAGE):
+    plt.show()
+else:
+    plt.close()
